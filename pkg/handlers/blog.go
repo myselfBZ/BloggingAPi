@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-
+    "time"
 	"github.com/gin-gonic/gin"
 	"github.com/myselfBZ/BloggingAPI/pkg/models"
 	"github.com/myselfBZ/BloggingAPI/pkg/utils"
@@ -30,25 +30,26 @@ func CreateBlog(c *gin.Context) {
 }
 
 func DeleteBlog(c *gin.Context) {
-	id := c.Param("id")
+    start := time.Now()	
+    id := c.Param("id")
 	userId := c.MustGet("id").(uint)
 	validID, err := strconv.Atoi(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
 		return
 	}
-
-	var blog *models.Blog
-	if err := blog.Delete(uint(validID), userId); err != nil {
+    var tempBlog *models.Blog
+	if err := tempBlog.Delete(uint(validID), userId); err != nil {
 		if err == gorm.ErrRecordNotFound {
 			c.JSON(http.StatusNotFound, gin.H{"error": "message not found"})
 			return
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "server sucks"})
-		log.Fatal(err)
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{"message": "Deleted successfully"})
+    log.Println("this operation took: ", time.Since(start)) 
 
 }
 
