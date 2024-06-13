@@ -11,3 +11,6 @@ func LoadEnv() error {
 	}
 	return nil
 }
+
+
+
