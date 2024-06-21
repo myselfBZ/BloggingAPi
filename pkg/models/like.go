@@ -11,7 +11,7 @@ type Like struct {
 }
 
 func (l *Like) Like(userId, blogId uint) error {
-	result := config.DB.Create(l)
+	result := config.DB.Create(&Like{UserID: userId, BlogID: blogId})
 	if result.Error != nil {
 		config.DB.Where("user_id = ? AND blog_id = ?", userId, blogId).Delete(&Like{})
 		return result.Error
