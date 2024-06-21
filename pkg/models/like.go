@@ -10,10 +10,10 @@ type Like struct {
 	BlogID uint `gorm:"uniqueIndex:idx_user_blog" json:"blog_id"`
 }
 
-func (l *Like) Like() error {
+func (l *Like) Like(userId, blogId uint) error {
 	result := config.DB.Create(l)
 	if result.Error != nil {
-		config.DB.Where("user_id = ? AND blog_id = ?", l.UserID, l.BlogID).Delete(&Like{})
+		config.DB.Where("user_id = ? AND blog_id = ?", userId, blogId).Delete(&Like{})
 		return result.Error
 	}
 	return nil

@@ -12,12 +12,12 @@ type User struct {
 	Likes    []Like `json:"likes"`
 }
 
-func (u *User) Create() (*User, error) {
-	result := config.DB.Create(u)
+func (u *User) Create(user *User) ( error) {
+	result := config.DB.Create(user)
 	if result.Error != nil {
-		return nil, result.Error
+		return result.Error
 	}
-	return u, nil
+	return nil
 }
 
 func (u *User) Delete(id uint) error {
@@ -46,9 +46,9 @@ func (u *User) Update(username string, id uint) (*User, error) {
 }
 
 func (u *User) Get(username string) (*User, error) {
-	var newUser User
-	if result := config.DB.Where("username = ?", username).First(&newUser); result.Error != nil {
+	var user User
+	if result := config.DB.Where("username = ?", username).First(&user); result.Error != nil {
 		return nil, result.Error
 	}
-	return &newUser, nil
+	return &user, nil
 }

@@ -6,6 +6,6 @@ import (
 	"github.com/myselfBZ/BloggingAPI/pkg/middleware"
 )
 
-func LikeRoutes(r *gin.Engine) {
-	r.POST("/like/:id", middleware.Authenticate(), handlers.Like)
+func LikeRoutes(r *gin.Engine, h *handlers.Handler) {
+	r.POST("/like/:id", middleware.Authenticate(), h.Like)
 }

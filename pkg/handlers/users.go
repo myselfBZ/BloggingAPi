@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateUser(c *gin.Context) {
+func (h *Handler)CreateUser(c *gin.Context) {
 	var user models.User
 	if err := c.BindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, utils.InvalidJSON)
@@ -23,15 +23,14 @@ func CreateUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, utils.InternaleServer)
 		return
 	}
-	var newUser *models.User
-	newUser, err = user.Create()
+    err = h.UserStorage.Create(&user)
 	if err != nil {
 
 		c.JSON(http.StatusBadRequest, gin.H{"error": "username is already taken"})
 		return
 
 	}
-	token, err := middleware.GenerateToken(newUser.ID)
+	token, err := middleware.GenerateToken(user.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.InternaleServer)
 		return
@@ -40,7 +39,7 @@ func CreateUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"token": token})
 }
 
-func LogIn(c *gin.Context) {
+func (h *Handler) LogIn(c *gin.Context) {
 	var creadentials struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
@@ -49,20 +48,17 @@ func LogIn(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, utils.InvalidJSON)
 		return
 	}
-	var user *models.User
 	var fetchedUser *models.User
 	var err error
-	fetchedUser, err = user.Get(creadentials.Username)
+	fetchedUser, err = h.UserStorage.Get(creadentials.Username)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			c.JSON(http.StatusUnauthorized, utils.InvalidCreadentials)
 			return
 		}
-		log.Fatal(err)
 		c.JSON(http.StatusInternalServerError, utils.InternaleServer)
 		return
 	}
-	log.Println(fetchedUser)
 	isValid := utils.CompareHash(creadentials.Password, fetchedUser.Password)
 	if !isValid {
 		c.JSON(http.StatusUnauthorized, utils.InvalidCreadentials)

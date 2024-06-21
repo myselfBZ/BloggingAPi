@@ -5,7 +5,7 @@ import (
 	"github.com/myselfBZ/BloggingAPI/pkg/handlers"
 )
 
-func UserRoutes(r *gin.Engine) {
-	r.POST("/users", handlers.CreateUser)
-	r.POST("/log-in", handlers.LogIn)
+func UserRoutes(r *gin.Engine, h *handlers.Handler) {
+	r.POST("/users", h.CreateUser)
+	r.POST("/log-in", h.LogIn)
 }

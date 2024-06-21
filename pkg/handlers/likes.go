@@ -5,11 +5,10 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/myselfBZ/BloggingAPI/pkg/models"
 	"gorm.io/gorm"
 )
 
-func Like(c *gin.Context) {
+func(h *Handler) Like(c *gin.Context) {
 	userId := c.MustGet("id").(uint)
 	blogId := c.Param("id")
 	validatedId, err := strconv.Atoi(blogId)
@@ -17,11 +16,7 @@ func Like(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
 		return
 	}
-	like := &models.Like{
-		UserID: userId,
-		BlogID: uint(validatedId),
-	}
-	err = like.Like()
+	err = h.LikeStorage.Like(userId, uint(validatedId))
 	if err != nil {
 		if err == gorm.ErrForeignKeyViolated {
 			c.JSON(http.StatusNotFound, gin.H{"error": "blog not found"})

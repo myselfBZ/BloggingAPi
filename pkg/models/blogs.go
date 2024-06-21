@@ -15,8 +15,8 @@ type Blog struct {
 	Likes     []Like    `json:"likes"`
 }
 
-func (b *Blog) Create() error {
-	result := config.DB.Create(b)
+func (b *Blog) Create(blog *Blog) error {
+	result := config.DB.Create(blog)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -31,7 +31,7 @@ func (b *Blog) Delete(userID, id uint) error {
 	return nil
 }
 
-func (b *Blog) GetAll() ([]Blog, error) {
+func (b *Blog) GetBlogs() ([]Blog, error) {
 	var blogs []Blog
 	result := config.DB.Preload("Likes").Find(&blogs)
 	if result.Error != nil {
@@ -58,10 +58,11 @@ func (b *Blog) Update(id uint, newB *Blog, userId uint) (*Blog, error) {
 
 }
 
-func (b Blog) GetBlog(id uint) (*Blog, error) {
-	result := config.DB.Preload("Likes").First(&b, id)
+func (b *Blog) GetBlog(id uint) (*Blog, error) {
+    blog := &Blog{}
+	result := config.DB.Preload("Likes").First(blog, id)
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	return &b, nil
+	return blog, nil
 }
