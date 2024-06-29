@@ -11,11 +11,6 @@ import (
 )
 
 func init() {
-	err := config.LoadEnv()
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
 	config.ConnectDB()
 }
 
